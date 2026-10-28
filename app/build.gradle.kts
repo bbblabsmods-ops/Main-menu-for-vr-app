@@ -1,0 +1,28 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+android {
+    namespace = "com.example.questhub"
+    compileSdk = 34
+    defaultConfig {
+        applicationId = "com.example.questhub"
+        minSdk = 29
+        targetSdk = 32
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes { release { isMinifyEnabled = false } }
+    compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+    kotlinOptions { jvmTarget = "17" }
+    packaging { resources { excludes += setOf("META-INF/versions/9/OSGI-INF/MANIFEST.MF", "META-INF/*.kotlin_module") } }
+}
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    // Same ADB stack the WirelessDebugOverlay APK is built on
+    implementation("com.github.MuntashirAkon:libadb-android:3.1.0")
+    implementation("org.conscrypt:conscrypt-android:2.5.3")
+    implementation("com.github.MuntashirAkon:sun-security-android:1.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+}
