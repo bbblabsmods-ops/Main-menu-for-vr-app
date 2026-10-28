@@ -1,23 +1,33 @@
-name: Build APK
-on: [push, workflow_dispatch]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
-      - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: "8.7" }
-      - run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-      - name: Build
-        run: |
-          gradle assembleDebug --no-daemon --console=plain > build.log 2>&1 || {
-            echo "=========== ERRORS ==========="
-            grep -E "^e: |error:|What went wrong|Could not|Unresolved|FAILED" -A3 build.log | head -80
-            exit 1
-          }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: QuestHub-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+android {
+    namespace = "com.example.questhub"
+    compileSdk = 34
+    defaultConfig {
+        applicationId = "com.example.questhub"
+        minSdk = 29
+        targetSdk = 32
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes { release { isMinifyEnabled = false } }
+    compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+    kotlinOptions { jvmTarget = "17" }
+    packaging { resources { excludes += setOf("META-INF/versions/9/OSGI-INF/MANIFEST.MF", "META-INF/*.kotlin_module") } }
+}
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    // Same ADB stack the WirelessDebugOverlay APK is built on
+    implementation("com.github.MuntashirAkon:libadb-android:3.1.0")
+    implementation("org.conscrypt:conscrypt-android:2.5.3")
+    implementation("com.github.MuntashirAkon:sun-security-android:1.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+}
+configurations.all {
+    exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18")
+    exclude(group = "org.bouncycastle", module = "bcpkix-jdk15to18")
+    exclude(group = "org.bouncycastle", module = "bcutil-jdk15to18")
+}
