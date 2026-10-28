@@ -19,10 +19,14 @@ android {
 }
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
-    // Same ADB stack the WirelessDebugOverlay APK is built on
     implementation("com.github.MuntashirAkon:libadb-android:3.1.0")
     implementation("org.conscrypt:conscrypt-android:2.5.3")
     implementation("com.github.MuntashirAkon:sun-security-android:1.1")
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+}
+configurations.all {
+    exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18")
+    exclude(group = "org.bouncycastle", module = "bcpkix-jdk15to18")
+    exclude(group = "org.bouncycastle", module = "bcutil-jdk15to18")
 }
